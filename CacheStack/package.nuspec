@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>CacheStack</id>
+		<version>1.0.0</version>
+		<authors>Jim Geurts</authors>
+		<projectUrl>https://github.com/jgeurts/cachestack</projectUrl>
+		<licenseUrl>https://raw.github.com/jgeurts/cachestack/master/LICENSE.txt</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Cache extensions for Service Stack ICacheClient. Includes cache context and mvc donut caching.</description>
+		<summary>Cache extensions for Service Stack ICacheClient. Includes cache context and mvc donut caching.</summary>
+		<language>en-US</language>
+		<tags>cache caching servicestack service stack icacheclient donut donutcaching mvcdonutcaching mvc asp.net</tags>
+		<dependencies>
+      <dependency id="Microsoft.AspNet.Mvc" version="4.0" />
+      <dependency id="ServiceStack.Common" version="3.9" />
+		</dependencies>
+		<frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Configuration" />
+      <frameworkAssembly assemblyName="System.Web" />
+      <frameworkAssembly assemblyName="System.Web.Routing" />
+		</frameworkAssemblies>
+	</metadata>
+	<files>
+		<file src="bin\Release\Spruce.dll" target="lib\net45" />
+		<file src="bin\Release\Spruce.pdb" target="lib\net45" />
+	</files>
+</package>
