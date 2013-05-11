@@ -22,7 +22,7 @@
 		</frameworkAssemblies>
 	</metadata>
 	<files>
-		<file src="bin\Release\Spruce.dll" target="lib\net45" />
-		<file src="bin\Release\Spruce.pdb" target="lib\net45" />
+		<file src="bin\Release\CacheStack.dll" target="lib\net45" />
+		<file src="bin\Release\CacheStack.pdb" target="lib\net45" />
 	</files>
 </package>
