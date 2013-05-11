@@ -56,7 +56,7 @@ public enum CacheProfile {
 			CacheContext = new CacheContext(cache);
 		}
 		
-		[DonutoutputCache]
+		[DonutOutputCache]
 		public ActionResult Index() {
 			// Set the cache profile to use when caching this action
 			CacheContext.UseCacheProfile(CacheProfile.Profile2);
