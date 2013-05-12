@@ -103,6 +103,7 @@
     <Compile Include="IWithCacheContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CacheTriggerWatcher.cs" />
+    <Compile Include="ReferencesAttribute.cs" />
     <Compile Include="TriggerFor.cs" />
     <Compile Include="TriggerFrom.cs" />
   </ItemGroup>
