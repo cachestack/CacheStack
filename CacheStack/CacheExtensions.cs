@@ -103,6 +103,29 @@ namespace CacheStack
 
 			cache.Set(key, item, expiration);
 
+			// Rip through all other keys for this object type and add the item under those cache keys too
+			var itemType = typeof(T);
+			if (CacheStackSettings.CacheKeysForObject != null && CacheStackSettings.CacheKeysForObject.ContainsKey(itemType))
+			{
+				var keys = CacheStackSettings.CacheKeysForObject[itemType](item).ToList();
+				// Only setup the other cache keys if the current key exists in them. Should prevent some undesirable results if caching partial objects
+				if (keys.Any(x => x == key))
+				{
+					foreach (var k in keys)
+					{
+						if (k == key)
+							continue;
+						cache.Set(k, item, expiration);
+						AddKeyToTriggers(context, k);
+					}
+				}
+			}
+
+			AddKeyToTriggers(context, key);
+		}
+
+		private static void AddKeyToTriggers(CacheContext context, string key)
+		{
 			foreach (var watch in context.TriggerWatchers)
 			{
 				var keys = Triggers.GetOrAdd(watch.Name, new List<string>());

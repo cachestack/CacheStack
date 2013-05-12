@@ -25,5 +25,10 @@ namespace CacheStack
 		/// Defines the method for getting cache durations by profile
 		/// </summary>
 		public static Func<object, TimeSpan> CacheProfileDurations = profile => TimeSpan.FromMinutes(15);
+
+		/// <summary>
+		/// Provides a mechanism to get all cache keys for a particular object
+		/// </summary>
+		public static IDictionary<Type, Func<object, IEnumerable<string>>> CacheKeysForObject = new Dictionary<Type, Func<object, IEnumerable<string>>>();
 	}
 }

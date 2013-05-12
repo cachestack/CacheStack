@@ -81,3 +81,20 @@ public ActionResult MyAction(id) {
 	Cache.Trigger(TriggerFor.Id<MyObject>(myObject.Id));
 }
 ```
+
+
+### Populating multiple cache keys for a single object
+> Sometimes there are multiple ways of getting the same object. In this example, we have two cache keys for user objects. We can get a user by their id or by their username. Why hit the db when getting a user by username if we already have that user cached by id. 
+> Note: Multiple cache keys will only be populated if the original key is present in that list
+```csharp
+// Somewhere in your application configuration
+CacheStackSettings.CacheKeysForObject.Add(typeof(User), item => {
+	var userItem = item as User;
+	var keys = new List<string>();
+	
+	keys.Add(CacheKeys.User.ById(userItem.Id));
+	keys.Add(CacheKeys.User.ByUsername(userItem.Username));
+	
+	return keys;
+});
+```
