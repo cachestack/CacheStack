@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CacheStack")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Cache extensions for ServiceStack ICacheClient. Includes cache context and mvc donut caching.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CacheStack")]

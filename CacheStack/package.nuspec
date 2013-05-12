@@ -7,8 +7,8 @@
 		<projectUrl>https://github.com/jgeurts/cachestack</projectUrl>
 		<licenseUrl>https://raw.github.com/jgeurts/cachestack/master/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Cache extensions for Service Stack ICacheClient. Includes cache context and mvc donut caching.</description>
-		<summary>Cache extensions for Service Stack ICacheClient. Includes cache context and mvc donut caching.</summary>
+		<description>Cache extensions for ServiceStack ICacheClient. Includes cache context and mvc donut caching.</description>
+		<summary>Cache extensions for ServiceStack ICacheClient. Includes cache context and mvc donut caching.</summary>
 		<language>en-US</language>
 		<tags>cache caching servicestack service stack icacheclient donut donutcaching mvcdonutcaching mvc asp.net</tags>
 		<dependencies>
