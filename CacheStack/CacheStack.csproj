@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="CacheContext.cs" />
     <Compile Include="CacheExtensions.cs" />
+    <Compile Include="CacheHitEventArgs.cs" />
     <Compile Include="CacheStackSettings.cs" />
     <Compile Include="CacheTrigger.cs" />
     <Compile Include="DonutCaching\ActionSettings.cs" />

@@ -68,8 +68,14 @@ namespace CacheStack
 		public static T GetOrCache<T>(this ICacheClient cache, string key, Func<ICacheContext, T> cacheAction) where T : class
 		{
 			var item = cache.Get<T>(key);
+			var eventArgs = new CacheHitEventArgs
+				{
+					CacheKey = key,
+					Type = typeof(T)
+				};
 			if (item == null)
 			{
+				CacheStackSettings.OnCacheMiss(cache, eventArgs);
 				var context = new CacheContext(cache);
 
 				item = cacheAction(context);
@@ -77,6 +83,10 @@ namespace CacheStack
 				// No need to cache null values
 				if (item != null)
 					cache.CacheAndSetTriggers(context, key, item);
+			}
+			else
+			{
+				CacheStackSettings.OnCacheHit(cache, eventArgs);
 			}
 			return item;
 		}

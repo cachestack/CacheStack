@@ -14,7 +14,7 @@ namespace CacheStack.DonutCaching
 
 	public class KeyBuilder : IKeyBuilder
 	{
-		private const string CacheKeyPrefix = "_d0nutc@che.";
+		private const string CacheKeyPrefix = "__OutputCache.";
 
 		public string BuildKey(string controllerName)
 		{

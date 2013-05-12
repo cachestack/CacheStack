@@ -98,3 +98,20 @@ CacheStackSettings.CacheKeysForObject.Add(typeof(User), item => {
 	return keys;
 });
 ```
+
+
+### Capturing stats for cache hit/miss events
+> Please note that these events only fire if you use `Cache.GetOrCache()` and will not fire for other cache methods.
+```csharp
+// Somewhere in your application configuration
+CacheStackSettings.CacheHit += (cache, e) => {
+	Metrics.Increment("Cache.Hit.All");
+	Metrics.Increment("Cache.Hit.ByType." + e.Type.Name);
+	Metrics.Increment("Cache.Hit.ByKey." + e.CacheKey.TrimStart('_'));
+};
+CacheStackSettings.CacheMiss += (cache, e) => {
+	Metrics.Increment("Cache.Miss.All");
+	Metrics.Increment("Cache.Miss.ByType." + e.Type.Name);
+	Metrics.Increment("Cache.Miss.ByKey." + e.CacheKey.TrimStart('_'));
+};
+```

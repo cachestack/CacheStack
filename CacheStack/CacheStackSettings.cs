@@ -7,6 +7,23 @@ namespace CacheStack
 	public static class CacheStackSettings
 	{
 		/// <summary>
+		/// Invoked when an item is retrieved from the cache
+		/// </summary>
+		public static event EventHandler<CacheHitEventArgs> CacheHit = delegate {};
+		internal static void OnCacheHit(object cacheClient, CacheHitEventArgs e)
+		{
+			CacheHit(cacheClient, e);
+		}
+		/// <summary>
+		/// Invoked when an item is not in the cache
+		/// </summary>
+		public static event EventHandler<CacheHitEventArgs> CacheMiss = delegate {};
+		internal static void OnCacheMiss(object cacheClient, CacheHitEventArgs e)
+		{
+			CacheMiss(cacheClient, e);
+		}
+
+		/// <summary>
 		/// Cache client to use with output caching
 		/// </summary>
 		public static ICacheClient CacheClient { get; set; }
