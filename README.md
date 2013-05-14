@@ -90,11 +90,9 @@ public ActionResult MyAction(id) {
 // Somewhere in your application configuration
 CacheStackSettings.CacheKeysForObject.Add(typeof(User), item => {
 	var userItem = item as User;
-	var keys = new List<string>();
-	
+	var keys = new List<string>();	
 	keys.Add(CacheKeys.User.ById(userItem.Id));
-	keys.Add(CacheKeys.User.ByUsername(userItem.Username));
-	
+	keys.Add(CacheKeys.User.ByUsername(userItem.Username));	
 	return keys;
 });
 ```
