@@ -18,6 +18,8 @@ Conventions/Best Practices
 
 Example Usage
 ------------------------------
+* Real world, example usage can be found in the [MvcKickstart project](https://github.com/jgeurts/MvcKickstart).
+
 
 ### Configuring cache durations using cache profiles
 ```csharp
