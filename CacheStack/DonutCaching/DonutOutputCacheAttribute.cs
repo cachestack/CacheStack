@@ -65,6 +65,9 @@ namespace CacheStack.DonutCaching
 
 			if (_cacheSettings.IsServerCachingEnabled)
 			{
+				if (_cacheClient == null)
+					throw new NullReferenceException("CacheStackSettings.CacheClient has not been configured. Please initialize the ICacheClient for CacheStack.");
+
 				var cachedItem = _cacheClient.Get<CacheItem>(cacheKey);
 
 				if (cachedItem != null)

@@ -26,7 +26,7 @@ Example Usage
 // Get the cache client from your DI framework of choice or some other way
 CacheStackSettings.CacheClient = ObjectFactory.GetInstance<ICacheClient>();
 // All of our routes are unique and not shared, so we can use the route name instead of reflection to get a unique cache key
-CacheStackSettings.UseRouteNameforCacheKey = true;
+CacheStackSettings.UseRouteNameForCacheKey = true;
 CacheStackSettings.CacheProfileDurations = profile => {
 	// Can get these values from a db, web.config, or anywhere else
 	switch ((CacheProfile)profile) {
