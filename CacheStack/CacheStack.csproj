@@ -87,15 +87,15 @@
     <Compile Include="CacheStackSettings.cs" />
     <Compile Include="CacheTrigger.cs" />
     <Compile Include="DonutCaching\ActionSettings.cs" />
-    <Compile Include="DonutCaching\ActionSettingsSerialiser.cs" />
+    <Compile Include="DonutCaching\ActionSettingsSerializer.cs" />
     <Compile Include="DonutCaching\CacheHeadersHelper.cs" />
     <Compile Include="DonutCaching\CacheItem.cs" />
     <Compile Include="DonutCaching\CacheSettings.cs" />
     <Compile Include="DonutCaching\CacheSettingsManager.cs" />
     <Compile Include="DonutCaching\DonutHoleFiller.cs" />
     <Compile Include="DonutCaching\DonutOutputCacheAttribute.cs" />
+    <Compile Include="DonutCaching\EncryptingActionSettingsSerializer.cs" />
     <Compile Include="DonutCaching\KeyGenerator.cs" />
-    <Compile Include="DonutCaching\EncryptingActionSettingsSerialiser.cs" />
     <Compile Include="DonutCaching\Encryptor.cs" />
     <Compile Include="DonutCaching\HtmlHelperExtensions.cs" />
     <Compile Include="DonutCaching\KeyBuilder.cs" />

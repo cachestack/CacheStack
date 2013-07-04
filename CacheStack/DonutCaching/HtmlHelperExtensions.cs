@@ -6,7 +6,7 @@ namespace CacheStack.DonutCaching
 {
 	public static class HtmlHelperExtensions
 	{
-		private static readonly IActionSettingsSerialiser Serialiser = new EncryptingActionSettingsSerialiser(new ActionSettingsSerialiser(), new Encryptor());
+		private static readonly IActionSettingsSerializer Serializer = new EncryptingActionSettingsSerializer(new ActionSettingsSerializer(), new Encryptor());
 
 		/// <summary>
 		/// Invokes the specified child action method and returns the result as an HTML string.
@@ -147,9 +147,9 @@ namespace CacheStack.DonutCaching
 		{
 			if (excludeFromParentCache)
 			{
-				var serialisedActionSettings = GetSerialisedActionSettings(actionName, controllerName, routeValues);
+				var serializedActionSettings = GetSerializedActionSettings(actionName, controllerName, routeValues);
 
-				htmlHelper.ViewContext.Writer.Write("<!--Donut#{0}#-->", serialisedActionSettings);
+				htmlHelper.ViewContext.Writer.Write("<!--Donut#{0}#-->", serializedActionSettings);
 			}
 
 			htmlHelper.RenderAction(actionName, controllerName, routeValues);
@@ -173,15 +173,15 @@ namespace CacheStack.DonutCaching
 		{
 			if (excludeFromParentCache)
 			{
-				var serialisedActionSettings = GetSerialisedActionSettings(actionName, controllerName, routeValues);
+				var serializedActionSettings = GetSerializedActionSettings(actionName, controllerName, routeValues);
 
-				return new MvcHtmlString(string.Format("<!--Donut#{0}#-->{1}<!--EndDonut-->", serialisedActionSettings, htmlHelper.Action(actionName, controllerName, routeValues)));
+				return new MvcHtmlString(string.Format("<!--Donut#{0}#-->{1}<!--EndDonut-->", serializedActionSettings, htmlHelper.Action(actionName, controllerName, routeValues)));
 			}
 
 			return htmlHelper.Action(actionName, controllerName, routeValues);
 		}
 
-		private static string GetSerialisedActionSettings(string actionName, string controllerName, RouteValueDictionary routeValues)
+		private static string GetSerializedActionSettings(string actionName, string controllerName, RouteValueDictionary routeValues)
 		{
 			var actionSettings = new ActionSettings
 			{
@@ -190,7 +190,7 @@ namespace CacheStack.DonutCaching
 				RouteValues = routeValues
 			};
 
-			return Serialiser.Serialise(actionSettings);
+			return Serializer.Serialize(actionSettings);
 		}
 	}
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
+using ServiceStack.Text;
 
 namespace CacheStack.DonutCaching
 {
@@ -17,16 +19,16 @@ namespace CacheStack.DonutCaching
 	{
 		private static readonly Regex DonutHoles = new Regex("<!--Donut#(.*?)#-->(.*?)<!--EndDonut-->", RegexOptions.Compiled | RegexOptions.Singleline);
 
-		private readonly IActionSettingsSerialiser _actionSettingsSerialiser;
+		private readonly IActionSettingsSerializer _actionSettingsSerializer;
 
-		public DonutHoleFiller(IActionSettingsSerialiser actionSettingsSerialiser)
+		public DonutHoleFiller(IActionSettingsSerializer actionSettingsSerializer)
 		{
-			if (actionSettingsSerialiser == null)
+			if (actionSettingsSerializer == null)
 			{
-				throw new ArgumentNullException("actionSettingsSerialiser");
+				throw new ArgumentNullException("actionSettingsSerializer");
 			}
 
-			_actionSettingsSerialiser = actionSettingsSerialiser;
+			_actionSettingsSerializer = actionSettingsSerializer;
 		}
 
 		public string RemoveDonutHoleWrappers(string content, ControllerContext filterContext)
@@ -48,7 +50,7 @@ namespace CacheStack.DonutCaching
 
 			return DonutHoles.Replace(content, match =>
 			{
-				var actionSettings = _actionSettingsSerialiser.Deserialise(match.Groups[1].Value);
+				var actionSettings = _actionSettingsSerializer.Deserialize(match.Groups[1].Value);
 
 				return InvokeAction(filterContext.Controller, actionSettings.ActionName, actionSettings.ControllerName, actionSettings.RouteValues);
 			});
@@ -61,7 +63,19 @@ namespace CacheStack.DonutCaching
 
 			var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
 
-			return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
+			try
+			{
+				return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
+			}
+			catch (InvalidOperationException ex)
+			{
+				if (ex.Message == "No route in the route table matches the supplied values.")
+				{
+					var values = routeValues == null ? string.Empty : routeValues.Keys.Aggregate(string.Empty, (current, key) => current + ("\n" + key + ": " + routeValues[key]));
+					throw new Exception("Unable to find route. Controller: {0}, Action: {1}, Route Values: {2}".Fmt(controllerName, actionName, values), ex);
+				}
+				throw;
+			}
 		}
 	}
 }

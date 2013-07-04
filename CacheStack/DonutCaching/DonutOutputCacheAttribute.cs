@@ -39,7 +39,7 @@ namespace CacheStack.DonutCaching
 			var keyBuilder = new KeyBuilder();
 
 			_keyGenerator = new KeyGenerator(keyBuilder);
-			_donutHoleFiller = new DonutHoleFiller(new EncryptingActionSettingsSerialiser(new ActionSettingsSerialiser(), new Encryptor()));
+			_donutHoleFiller = new DonutHoleFiller(new EncryptingActionSettingsSerializer(new ActionSettingsSerializer(), new Encryptor()));
 			_cacheSettingsManager = new CacheSettingsManager();
 			_cacheHeadersHelper = new CacheHeadersHelper();
 			_cacheClient = CacheStackSettings.CacheClient;
