@@ -17,7 +17,7 @@ namespace CacheStack.DonutCaching
 
 	public class DonutHoleFiller : IDonutHoleFiller
 	{
-		private static readonly Regex DonutHoles = new Regex("<!--Donut#(.*?)#-->(.*?)<!--EndDonut-->", RegexOptions.Compiled | RegexOptions.Singleline);
+		private static readonly Regex DonutHoles = new Regex("<!--DC#(.*?)#-->(.*?)<!--/DC#\\1#-->", RegexOptions.Compiled | RegexOptions.Singleline);
 
 		private readonly IActionSettingsSerializer _actionSettingsSerializer;
 
@@ -33,21 +33,11 @@ namespace CacheStack.DonutCaching
 
 		public string RemoveDonutHoleWrappers(string content, ControllerContext filterContext)
 		{
-			if (filterContext.IsChildAction)
-			{
-				return content;
-			}
-
 			return DonutHoles.Replace(content, match => match.Groups[2].Value);
 		}
 
 		public string ReplaceDonutHoleContent(string content, ControllerContext filterContext)
 		{
-			if (filterContext.IsChildAction)
-			{
-				return content;
-			}
-
 			return DonutHoles.Replace(content, match =>
 			{
 				var actionSettings = _actionSettingsSerializer.Deserialize(match.Groups[1].Value);

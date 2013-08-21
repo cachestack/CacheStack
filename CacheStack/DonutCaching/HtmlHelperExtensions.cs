@@ -145,18 +145,20 @@ namespace CacheStack.DonutCaching
 		/// <param name="excludeFromParentCache">A flag that determines whether the action should be excluded from any parent cache.</param>
 		public static void RenderAction(this HtmlHelper htmlHelper, string actionName, string controllerName, RouteValueDictionary routeValues, bool excludeFromParentCache)
 		{
+			string serializedActionSettings = null;
 			if (excludeFromParentCache)
 			{
-				var serializedActionSettings = GetSerializedActionSettings(actionName, controllerName, routeValues);
+				serializedActionSettings = GetSerializedActionSettings(actionName, controllerName, routeValues);
 
-				htmlHelper.ViewContext.Writer.Write("<!--Donut#{0}#-->", serializedActionSettings);
+				htmlHelper.ViewContext.Writer.Write("<!--DC#{0}#-->", serializedActionSettings);
 			}
 
 			htmlHelper.RenderAction(actionName, controllerName, routeValues);
 
 			if (excludeFromParentCache)
 			{
-				htmlHelper.ViewContext.Writer.Write("<!--EndDonut-->");
+				serializedActionSettings = serializedActionSettings ?? GetSerializedActionSettings(actionName, controllerName, routeValues);
+				htmlHelper.ViewContext.Writer.Write("<!--/DC#{0}#-->", serializedActionSettings);
 			}
 		}
 
@@ -175,7 +177,7 @@ namespace CacheStack.DonutCaching
 			{
 				var serializedActionSettings = GetSerializedActionSettings(actionName, controllerName, routeValues);
 
-				return new MvcHtmlString(string.Format("<!--Donut#{0}#-->{1}<!--EndDonut-->", serializedActionSettings, htmlHelper.Action(actionName, controllerName, routeValues)));
+				return new MvcHtmlString(string.Format("<!--DC#{0}#-->{1}<!--/DC#{0}#-->", serializedActionSettings, htmlHelper.Action(actionName, controllerName, routeValues)));
 			}
 
 			return htmlHelper.Action(actionName, controllerName, routeValues);
