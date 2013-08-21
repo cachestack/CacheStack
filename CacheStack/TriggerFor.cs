@@ -9,34 +9,40 @@ namespace CacheStack
 	{
 		// Key: Object type being updated
 		// Value: List of class types with properties that reference the key
-		private static readonly Lazy<Dictionary<Type, IList<Type>>> ObjectReferences = new Lazy<Dictionary<Type, IList<Type>>>(() =>
+		// {
+		//   user: { 
+		//    project: ["createdBy","modifiedBy"],
+		//    template: ["createdBy","modifiedBy"]
+		//   }
+		// }
+		private static readonly Lazy<Dictionary<Type, IDictionary<Type, IList<string>>>> ObjectReferences = new Lazy<Dictionary<Type, IDictionary<Type, IList<string>>>>(() =>
 			{
-				var references = new Dictionary<Type, IList<Type>>();
+				var references = new Dictionary<Type, IDictionary<Type, IList<string>>>();
 				// Get a list of all ReferencesAttributes used in the model classes
-				var classTypes = CacheStackSettings.TypesForObjectRelations;
-				if (classTypes == null)
-					return references;
-
+				var classTypes = typeof(TriggerFor).Assembly.GetTypes().Where(x => x.IsPublic && !x.IsAbstract && x.IsClass && x.Namespace != null && x.Namespace.StartsWith("Quad.Core.Models."));
 				foreach (var classType in classTypes)
 				{
-					foreach (var property in classType.GetProperties())
+					var propertiesWithReferencesAttribute = classType.GetProperties().Where(prop => prop.IsDefined(typeof(ReferencesAttribute), true)).ToList();
+					foreach (var property in propertiesWithReferencesAttribute)
 					{
-						// Dynamic trick to get Spruce or ormlite references attribute.
-						var attribute = property.GetCustomAttributes(true).FirstOrDefault(attr => attr.GetType().Name == "ReferencesAttribute") as dynamic;
+						var attribute = property.GetCustomAttributes(typeof(ReferencesAttribute), true).FirstOrDefault() as ReferencesAttribute;
 						if (attribute == null)
-							continue;
-
+							throw new Exception("Property does not have a ReferencesAttribute applied. Type: " + classType + ", Property: " + property.Name);
 						if (!references.ContainsKey(attribute.Type))
 						{
-							references.Add(attribute.Type, new List<Type>());
+							references.Add(attribute.Type, new Dictionary<Type, IList<string>>());
 						}
-						if (references[attribute.Type].Contains(classType))
-							continue;
-						references[attribute.Type].Add(classType);
+
+						if (!references[attribute.Type].ContainsKey(classType))
+						{
+							references[attribute.Type].Add(classType, new List<string>());
+						}
+						references[attribute.Type][classType].Add(property.Name);
 					}
 				}
 				return references;
 			});
+
 		/// <summary>
 		/// Triggers for the object's id and other object types with a relation on this object type and this object's value.  
 		/// WARNING: This is a big cache clearing hammer, use wisely.  
@@ -53,16 +59,20 @@ namespace CacheStack
 			var idProperty = type.GetProperty("Id");
 			if (idProperty == null)
 				throw new Exception("Object does not have Id property. Type: " + type);
-			
+
 			var value = idProperty.GetValue(item);
 			triggers.Add(Id(type, value));
 
 			if (ObjectReferences.Value.ContainsKey(type))
 			{
 				var classesWithReferences = ObjectReferences.Value[type];
-				foreach (var classType in classesWithReferences)
+				foreach (var classReferences in classesWithReferences)
 				{
-					triggers.Add(Relation(classType, type, value));
+					var classReference = classReferences.Key;
+					foreach (var property in classReferences.Value)
+					{
+						triggers.Add(Relation(classReference, property, value));
+					}
 				}
 			}
 			return triggers.ToArray();
@@ -82,10 +92,10 @@ namespace CacheStack
 		{
 			var name = type.FullName;
 			return new CacheTrigger
-				       {
+					   {
 						   CacheKeyForAnyItem = name + CacheContext.AnySuffix,
 						   CacheKeyForIndividualItem = name + CacheContext.IdSuffix + id
-				       };
+					   };
 		}
 
 		/// <summary>
@@ -101,23 +111,19 @@ namespace CacheStack
 			var member = property.Body as MemberExpression ?? ((UnaryExpression) property.Body).Operand as MemberExpression;
 
 			if (member == null)
-				throw new Exception("Specified property does not have a ReferencesAttribute applied. Type: " + typeof(T).FullName + " Property: " + property.Name);
+				throw new Exception("Unable to get property name. Type: " + typeof(T).FullName + " Property: " + property.Name);
 
-			// Dynamic trick to get Spruce or ormlite references attribute.
-			var referenceAttribute = member.Member.GetCustomAttributes(true).FirstOrDefault(attr => attr.GetType().Name == "ReferencesAttribute") as dynamic;
-			if (referenceAttribute == null)
-				throw new Exception("Specified property does not have a ReferencesAttribute applied. Type: " + typeof(T).FullName + ", Property: " + property.Name);
-
-			return Relation(typeof(T), referenceAttribute.Type, value);
+			return Relation(typeof(T), member.Member.Name, value);
 		}
-		private static ICacheTrigger Relation(Type type, Type referencedType, object value)
+
+		private static ICacheTrigger Relation(Type type, string referencedColumnName, object value)
 		{
-			var name = type.FullName + "__" + referencedType.FullName;
+			var name = type.FullName + "__" + referencedColumnName;
 			return new CacheTrigger
-				       {
+					   {
 						   CacheKeyForAnyItem = type.FullName + CacheContext.AnySuffix,
 						   CacheKeyForIndividualItem = name + CacheContext.IdSuffix + value
-				       };
+					   };
 		}
 
 		/// <summary>
@@ -128,9 +134,9 @@ namespace CacheStack
 		public static ICacheTrigger Name(string name)
 		{
 			return new CacheTrigger
-				       {
+					   {
 						   CacheKeyForIndividualItem = name
-				       };
+					   };
 		}
 	}
 }

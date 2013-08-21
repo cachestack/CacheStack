@@ -40,14 +40,9 @@ namespace CacheStack
 			var member = property.Body as MemberExpression ?? ((UnaryExpression) property.Body).Operand as MemberExpression;
 
 			if (member == null)
-				throw new Exception("Specified property does not have a ReferencesAttribute applied. Type: " + typeof(T).FullName + " Property: " + property.Name);
+				throw new Exception("Unable to get property name. Type: " + typeof(T).FullName + " Property: " + property.Name);
 
-			// Dynamic trick to get Spruce or ormlite references attribute.
-			var referenceAttribute = member.Member.GetCustomAttributes(true).FirstOrDefault(attr => attr.GetType().Name == "ReferencesAttribute") as dynamic;
-			if (referenceAttribute == null)
-				throw new Exception("Specified property does not have a ReferencesAttribute applied. Type: " + typeof(T).FullName + " Property: " + property.Name);
-
-			var name = typeof(T).FullName + "__" + referenceAttribute.Type.FullName;
+			var name = typeof(T).FullName + "__" + member.Member.Name;
 			return Name(name + CacheContext.IdSuffix + value);
 		}
 
