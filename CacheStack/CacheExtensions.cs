@@ -9,7 +9,7 @@ namespace CacheStack
 	public static class CacheExtensions
 	{
 		private static readonly ConcurrentDictionary<string, List<string>> Triggers = new ConcurrentDictionary<string, List<string>>();
-		
+
 		/// <summary>
 		/// Trigger a notification to clear the cache for items that are watching the specified <c>ICacheTrigger</c>
 		/// </summary>
@@ -139,7 +139,7 @@ namespace CacheStack
 			foreach (var watch in context.TriggerWatchers)
 			{
 				var keys = Triggers.GetOrAdd(watch.Name, new List<string>());
-				keys.Add(key);
+				AddUniqueKey(keys, key);
 			}
 		}
 
@@ -163,6 +163,15 @@ namespace CacheStack
 				cache.CacheAndSetTriggers(context, key, item);
 			}
 			return item.Value;
+		}
+		
+		/// <summary>
+		/// Clear all triggers
+		/// </summary>
+		/// <param name="cache">Cache to work with</param>
+		public static void FlushTriggers(this ICacheClient cache)
+		{
+			Triggers.Clear();
 		}
 	}
 }
