@@ -8,7 +8,7 @@ namespace CacheStack
 {
 	public static class CacheExtensions
 	{
-		private static readonly ConcurrentDictionary<string, List<string>> Triggers = new ConcurrentDictionary<string, List<string>>();
+		private static readonly ConcurrentDictionary<string, ConcurrentBag<string>> Triggers = new ConcurrentDictionary<string, ConcurrentBag<string>>();
 
 		/// <summary>
 		/// Trigger a notification to clear the cache for items that are watching the specified <c>ICacheTrigger</c>
@@ -17,7 +17,7 @@ namespace CacheStack
 		/// <param name="triggers">Triggers to clear cache listeners <remarks>Use the <c>TriggerFor</c> helper</remarks></param>
 		public static void Trigger(this ICacheClient cache, params ICacheTrigger[] triggers)
 		{
-			var keys = new List<string>();
+			var keys = new ConcurrentBag<string>();
 			foreach (var trigger in triggers)
 			{
 				AddUniqueKey(keys, trigger.CacheKeyForAnyItem);
@@ -31,7 +31,7 @@ namespace CacheStack
 			}
 		}
 
-		private static void AddUniqueKey(ICollection<string> keys, string key)
+		private static void AddUniqueKey(ConcurrentBag<string> keys, string key)
 		{
 			if (string.IsNullOrEmpty(key))
 				return;
@@ -45,7 +45,7 @@ namespace CacheStack
 			if (string.IsNullOrEmpty(key))
 				return;
 
-			List<string> keys;
+			ConcurrentBag<string> keys;
 			// Do not need the trigger keys any more since they will be re-added as needed
 			Triggers.TryRemove(key, out keys);
 			if (keys == null)
@@ -138,7 +138,7 @@ namespace CacheStack
 		{
 			foreach (var watch in context.TriggerWatchers)
 			{
-				var keys = Triggers.GetOrAdd(watch.Name, new List<string>());
+				var keys = Triggers.GetOrAdd(watch.Name, new ConcurrentBag<string>());
 				AddUniqueKey(keys, key);
 			}
 		}
